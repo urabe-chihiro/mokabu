@@ -17,6 +17,7 @@
 - **PostgreSQL** - 本番環境用データベース
 - **SQLite** - ローカル開発用データベース
 - **tRPC** - 型安全な API 層（エンドツーエンドの型安全性）
+- **NextAuth.js (Auth.js v5)** - 認証・セッション管理
 
 ### モノレポ・ビルドツール
 - **Turborepo** - 高速モノレポビルドシステム
@@ -28,11 +29,13 @@
 
 ## ✨ 主な機能
 
+- 🔐 **認証機能** - メール/パスワードによる安全なログイン・サインアップ
 - 📊 **ポートフォリオ管理** - 保有株式の一覧表示・追加・編集・削除
 - 💰 **損益計算** - リアルタイムでの評価損益の自動計算
 - 📈 **パフォーマンス分析** - ポートフォリオ全体のパフォーマンス可視化
 - 🏷️ **セクター分類** - 業種別の保有比率分析
 - 📱 **レスポンシブデザイン** - モバイル・タブレット・デスクトップ対応
+- ⚡ **高速な初期表示** - Server Component による SSR
 
 ## 🏛️ アーキテクチャ設計
 
@@ -338,6 +341,149 @@ export const stockRouter = router({
 // クライアント側（型が自動補完される）
 const { data } = trpc.stock.getAll.useQuery();
 ```
+
+### tRPC 実装パターン（Server Component vs Client Component）
+
+このアプリケーションでは、Next.js App Router の特性を活かし、**Server Component** と **Client Component** で異なる tRPC の使用方法を採用しています。
+
+#### 📋 基本ルール
+
+```
+Server Component (app/*/page.tsx)
+  ↓ createCaller で初期データ取得
+  ↓ 高速な SSR
+  ↓
+Client Component (features/*/components/*.tsx)
+  ↓ trpc Hooks でインタラクティブな操作
+  ↓ リアルタイム更新・キャッシュ管理
+```
+
+#### 🖥️ Server Component での使用（createCaller）
+
+ページレベルのコンポーネント（`app/`ディレクトリ）では `createCaller` を使用：
+
+```typescript
+// app/portfolio/page.tsx
+import { auth } from '@/lib/auth'
+import { createCaller } from '@mokabu/server'
+import type { PortfolioList } from '@/lib/trpc/types'
+
+export default async function PortfolioPage() {
+  // 認証チェック
+  const session = await auth()
+  if (!session?.user) {
+    redirect('/login')
+  }
+
+  // createCaller でサーバー側でデータ取得
+  const caller = createCaller({ session })
+  
+  // イミュータブルな実装（エラー時は空配列を返す）
+  const initialData: PortfolioList = await caller.portfolio
+    .getAll()
+    .catch((error) => {
+      console.error('Failed to fetch portfolios:', error)
+      return []
+    })
+
+  return <PortfolioList initialData={initialData} />
+}
+```
+
+**用途:**
+- ✅ 初期データ取得（SSR）
+- ✅ 認証チェック
+- ✅ SEOに必要なデータ
+- ✅ ページレベルの重要なデータ
+
+**メリット:**
+- ⚡ 高速な初期表示（ローディングなし）
+- 🔍 SEOフレンドリー
+- 🔐 サーバー側での認証チェック
+
+#### 📱 Client Component での使用（Hooks）
+
+機能コンポーネント（`features/`ディレクトリ）では tRPC Hooks を使用：
+
+```typescript
+// features/portfolio/components/PortfolioList.tsx
+'use client'
+
+import { trpc } from '@/lib/trpc/Provider'
+import type { PortfolioList as PortfolioListType } from '@/lib/trpc/types'
+
+interface Props {
+  initialData?: PortfolioListType
+}
+
+export function PortfolioList({ initialData }: Props) {
+  // Hooks でクライアント側のデータ管理
+  const { data, refetch } = trpc.portfolio.getAll.useQuery(undefined, {
+    initialData,           // Server Component からの初期データを活用
+    refetchOnMount: false, // 不要な再取得を防ぐ
+    staleTime: 60 * 1000,  // 1分間キャッシュ
+  })
+
+  // Mutation も型安全
+  const createMutation = trpc.portfolio.create.useMutation({
+    onSuccess: () => refetch()
+  })
+
+  return (
+    // UI実装...
+  )
+}
+```
+
+**用途:**
+- ✅ ユーザーアクションに応じたデータ取得
+- ✅ リアルタイム更新
+- ✅ フォーム送信・CRUD操作
+- ✅ 検索・フィルター・ページネーション
+
+**メリット:**
+- 🔄 React Query によるキャッシュ管理
+- ⚡ 楽観的UI更新
+- 🎯 きめ細かいデータ管理
+
+#### 🎯 ハイブリッドアプローチ
+
+両方を組み合わせることで、**高速な初期表示** と **リアルタイム更新** の両立を実現：
+
+```
+1. Server Component で初期データを取得（SSR）
+2. Client Component に初期データを渡す
+3. Client Component で React Query がキャッシュ管理
+4. 以降のユーザー操作は Client 側で処理
+```
+
+#### 🔧 型安全な実装
+
+`any` を使わず、tRPC の型推論を最大限活用：
+
+```typescript
+// apps/web/src/lib/trpc/types.ts
+import type { AppRouter } from '@mokabu/server'
+import type { inferRouterOutputs } from '@trpc/server'
+
+// tRPC ルーターから型を自動推論
+export type RouterOutputs = inferRouterOutputs<AppRouter>
+
+// 各エンドポイントの型をエクスポート
+export type PortfolioList = RouterOutputs['portfolio']['getAll']
+export type Portfolio = PortfolioList[number]
+export type User = RouterOutputs['auth']['me']
+```
+
+これにより、サーバー側の型変更が自動的にクライアントに反映されます。
+
+#### 📁 実装場所の目安
+
+| 場所 | 使用方法 | 例 |
+|------|----------|-----|
+| `app/*/page.tsx` | `createCaller` | ポートフォリオ一覧の初期表示 |
+| `features/*/components/` | `trpc.*.*.useQuery()` | データの表示・更新 |
+| `features/*/components/` | `trpc.*.*.useMutation()` | データの作成・編集・削除 |
 
 ### Material-UI コンポーネントの使用
 

@@ -54,8 +54,8 @@ export default function SignupPage() {
         router.push('/portfolio')
         router.refresh()
       }
-    } catch (err: any) {
-      setError(err.message || '登録に失敗しました')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '登録に失敗しました')
     } finally {
       setIsLoading(false)
     }

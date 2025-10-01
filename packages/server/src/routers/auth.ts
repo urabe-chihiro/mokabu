@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { prisma } from '@mokabu/database'
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 import { TRPCError } from '@trpc/server'
 
 export const authRouter = router({
@@ -36,7 +36,7 @@ export const authRouter = router({
           email: input.email,
           password: hashedPassword,
           name: input.name,
-        },
+        } as any,
         select: {
           id: true,
           email: true,
@@ -58,7 +58,6 @@ export const authRouter = router({
         id: true,
         email: true,
         name: true,
-        image: true,
         createdAt: true,
       },
     })

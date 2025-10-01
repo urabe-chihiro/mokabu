@@ -13,9 +13,18 @@ import {
 } from '@mui/material'
 import { TrendingUp, TrendingDown } from '@mui/icons-material'
 import Link from 'next/link'
+import type { PortfolioList as PortfolioListType } from '@/lib/trpc/types'
 
-export function PortfolioList() {
-  const { data: portfolios, isLoading, error } = trpc.portfolio.getAll.useQuery()
+interface PortfolioListProps {
+  initialData?: PortfolioListType
+}
+
+export function PortfolioList({ initialData }: PortfolioListProps) {
+  const { data: portfolios, isLoading, error } = trpc.portfolio.getAll.useQuery(undefined, {
+    initialData: initialData,
+    refetchOnMount: false, // 初期データがある場合はマウント時に再取得しない
+    staleTime: 60 * 1000, // 1分間はデータを新鮮として扱う
+  })
 
   if (isLoading) {
     return (

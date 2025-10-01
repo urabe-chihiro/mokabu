@@ -42,7 +42,7 @@ export default function LoginPage() {
         router.push('/portfolio')
         router.refresh()
       }
-    } catch (err) {
+    } catch {
       setError('ログインに失敗しました')
     } finally {
       setIsLoading(false)
