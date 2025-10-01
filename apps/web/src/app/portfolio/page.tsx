@@ -2,19 +2,14 @@ import { Box, Container, Typography } from '@mui/material'
 import { PortfolioList } from '@/features/portfolio/components/PortfolioList'
 import { auth } from '@/lib/auth'
 import { createCaller } from '@mokabu/server'
-import { redirect } from 'next/navigation'
 import type { PortfolioList as PortfolioListType } from '@/lib/trpc/types'
 
 export default async function PortfolioPage() {
-  // Server Componentで認証チェック
+  // middlewareで認証済みを保証
   const session = await auth()
-  
-  if (!session?.user) {
-    redirect('/login')
-  }
 
   // Server Componentで初期データを取得
-  const caller = createCaller({ session })
+  const caller = createCaller({ session: session! })
   
   // イミュータブルな実装（エラー時は空配列を返す）
   const initialData: PortfolioListType = await caller.portfolio
