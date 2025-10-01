@@ -162,16 +162,15 @@ export function PortfolioList() {
               </Box>
 
               {/* アクション */}
-              <Link href={`/portfolio/${portfolio.id}`} passHref legacyBehavior>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  component="a"
-                  sx={{ py: 1.5 }}
-                >
-                  詳細を見る
-                </Button>
-              </Link>
+              <Button
+                variant="outlined"
+                fullWidth
+                component={Link}
+                href={`/portfolio/${portfolio.id}`}
+                sx={{ py: 1.5 }}
+              >
+                詳細を見る
+              </Button>
             </CardContent>
           </Card>
         )

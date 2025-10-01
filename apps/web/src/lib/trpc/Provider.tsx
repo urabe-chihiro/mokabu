@@ -16,7 +16,17 @@ function getBaseUrl() {
 }
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            // SSR時にクライアントで即座に再フェッチしないようにする
+            staleTime: 60 * 1000,
+          },
+        },
+      })
+  )
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
