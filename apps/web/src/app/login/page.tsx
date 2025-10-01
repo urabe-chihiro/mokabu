@@ -15,6 +15,7 @@ import {
   Link as MuiLink,
   Divider,
 } from '@mui/material'
+import { Google } from '@mui/icons-material'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -49,6 +50,18 @@ export default function LoginPage() {
     }
   }
 
+  const handleGoogleLogin = async () => {
+    setError('')
+    setIsLoading(true)
+    
+    try {
+      await signIn('google', { callbackUrl: '/portfolio' })
+    } catch {
+      setError('Googleログインに失敗しました')
+      setIsLoading(false)
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -75,6 +88,21 @@ export default function LoginPage() {
                 {error}
               </Alert>
             )}
+
+            {/* Googleログインボタン */}
+            <Button
+              variant="outlined"
+              fullWidth
+              size="large"
+              startIcon={<Google />}
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+              sx={{ py: 1.5, mb: 3 }}
+            >
+              Googleでログイン
+            </Button>
+
+            <Divider sx={{ my: 3 }}>または</Divider>
 
             <form onSubmit={handleSubmit}>
               <TextField
@@ -108,8 +136,6 @@ export default function LoginPage() {
                 {isLoading ? 'ログイン中...' : 'ログイン'}
               </Button>
             </form>
-
-            <Divider sx={{ my: 3 }}>または</Divider>
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">

@@ -19,8 +19,7 @@ export default auth((req) => {
   }
 
   // 未認証ユーザーが保護されたページにアクセス → ログインページにリダイレクト
-  const isPublicPath = pathname === '/'
-  if (!isLoggedIn && !isAuthPath && !isPublicPath) {
+  if (!isLoggedIn && !isAuthPath) {
     console.log('[Middleware] Unauthenticated user accessing protected page -> redirect to /login')
     const loginUrl = new URL('/login', nextUrl.origin)
     loginUrl.searchParams.set('callbackUrl', pathname)

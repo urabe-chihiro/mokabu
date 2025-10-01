@@ -16,6 +16,7 @@ import {
   Link as MuiLink,
   Divider,
 } from '@mui/material'
+import { Google } from '@mui/icons-material'
 import Link from 'next/link'
 
 export default function SignupPage() {
@@ -27,6 +28,18 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const signupMutation = trpc.auth.signup.useMutation()
+
+  const handleGoogleLogin = async () => {
+    setError('')
+    setIsLoading(true)
+    
+    try {
+      await signIn('google', { callbackUrl: '/portfolio' })
+    } catch {
+      setError('Googleログインに失敗しました')
+      setIsLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,6 +100,21 @@ export default function SignupPage() {
                 {error}
               </Alert>
             )}
+
+            {/* Googleログインボタン */}
+            <Button
+              variant="outlined"
+              fullWidth
+              size="large"
+              startIcon={<Google />}
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+              sx={{ py: 1.5, mb: 3 }}
+            >
+              Googleで登録
+            </Button>
+
+            <Divider sx={{ my: 3 }}>または</Divider>
 
             <form onSubmit={handleSubmit}>
               <TextField
