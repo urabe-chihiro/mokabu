@@ -1,0 +1,17 @@
+{
+  "name": "@mokabu/server",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@mokabu/database": "workspace:*",
+    "@trpc/server": "^11.0.0",
+    "superjson": "^2.2.2",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
+

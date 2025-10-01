@@ -1,5 +1,5 @@
 import { createTRPCClient, httpBatchLink } from '@trpc/client'
-import type { AppRouter } from '@/server/routers'
+import type { AppRouter } from '@mokabu/server'
 import superjson from 'superjson'
 
 function getBaseUrl() {

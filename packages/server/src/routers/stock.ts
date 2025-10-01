@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@mokabu/database'
 
 export const stockRouter = router({
   // ポートフォリオ内の株式取得
