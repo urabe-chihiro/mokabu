@@ -1,76 +1,134 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Box, Container, Typography, Card, CardContent, Button, Chip } from '@mui/material'
+import { Dashboard, AttachMoney } from '@mui/icons-material'
 
 export default function HomePage() {
+  const techStack = [
+    'Next.js 15',
+    'React 19',
+    'TypeScript',
+    'Material-UI',
+    'tRPC',
+    'Prisma',
+    'SQLite',
+    'Turborepo',
+  ]
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center space-y-6 mb-16">
-          <h1 className="text-5xl font-bold tracking-tight">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #f5f5f5, #e0e0e0)',
+      }}
+    >
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        {/* ヘッダー */}
+        <Box sx={{ textAlign: 'center', mb: 8 }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            sx={{
+              fontWeight: 'bold',
+              mb: 2,
+            }}
+          >
             Mokabu
-          </h1>
-          <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+          </Typography>
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            sx={{ maxWidth: 800, mx: 'auto' }}
+          >
             モダンな技術スタックで構築された
             <br />
             株式投資のポートフォリオ管理アプリケーション
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
-          <Card>
-            <CardHeader>
-              <CardTitle>📊 ポートフォリオ管理</CardTitle>
-              <CardDescription>
-                保有株式の一覧表示・追加・編集・削除
-              </CardDescription>
-            </CardHeader>
+        {/* 機能カード */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+            gap: 3,
+            mb: 8,
+          }}
+        >
+          <Card sx={{ boxShadow: 3 }}>
             <CardContent>
-              <Link href="/portfolio">
-                <Button className="w-full">ポートフォリオを見る</Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Dashboard sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
+                <Typography variant="h5" component="h2" fontWeight="bold">
+                  ポートフォリオ管理
+                </Typography>
+              </Box>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                保有株式の一覧表示・追加・編集・削除
+              </Typography>
+              <Link href="/portfolio" passHref legacyBehavior>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  component="a"
+                  sx={{ py: 1.5 }}
+                >
+                  ポートフォリオを見る
+                </Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>💰 損益計算</CardTitle>
-              <CardDescription>
-                リアルタイムでの評価損益の自動計算
-              </CardDescription>
-            </CardHeader>
+          <Card sx={{ boxShadow: 3 }}>
             <CardContent>
-              <Button className="w-full" variant="outline" disabled>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AttachMoney sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
+                <Typography variant="h5" component="h2" fontWeight="bold">
+                  損益計算
+                </Typography>
+              </Box>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                リアルタイムでの評価損益の自動計算
+              </Typography>
+              <Button
+                variant="outlined"
+                fullWidth
+                disabled
+                sx={{ py: 1.5 }}
+              >
                 近日公開
               </Button>
             </CardContent>
           </Card>
-        </div>
+        </Box>
 
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-semibold">技術スタック</h2>
-          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
-            {[
-              'Next.js 15',
-              'React 19',
-              'TypeScript',
-              'Tailwind CSS',
-              'shadcn/ui',
-              'tRPC',
-              'Prisma',
-              'SQLite',
-              'Turborepo',
-            ].map((tech) => (
-              <span
+        {/* 技術スタック */}
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h4" component="h2" fontWeight="bold" sx={{ mb: 3 }}>
+            技術スタック
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 1,
+              maxWidth: 800,
+              mx: 'auto',
+            }}
+          >
+            {techStack.map((tech) => (
+              <Chip
                 key={tech}
-                className="px-3 py-1 bg-neutral-200 dark:bg-neutral-800 rounded-full text-sm"
-              >
-                {tech}
-              </span>
+                label={tech}
+                sx={{
+                  px: 1,
+                  fontSize: '0.875rem',
+                }}
+              />
             ))}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   )
 }

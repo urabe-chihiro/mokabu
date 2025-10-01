@@ -1,18 +1,25 @@
+import { Box, Container, Typography } from '@mui/material'
 import { PortfolioList } from '@/features/portfolio/components/PortfolioList'
 
 export default function PortfolioPage() {
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">ポートフォリオ</h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+      }}
+    >
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Box sx={{ mb: 6 }}>
+          <Typography variant="h3" component="h1" fontWeight="bold" sx={{ mb: 1 }}>
+            ポートフォリオ
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
             保有している株式ポートフォリオの一覧
-          </p>
-        </div>
+          </Typography>
+        </Box>
         <PortfolioList />
-      </div>
-    </div>
+      </Container>
+    </Box>
   )
 }
-

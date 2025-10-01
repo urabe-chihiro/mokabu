@@ -1,17 +1,7 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { TRPCProvider } from '@/lib/trpc/Provider'
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
+import { ThemeRegistry } from '@/lib/ThemeRegistry'
 
 export const metadata: Metadata = {
   title: 'Mokabu - 株式ポートフォリオ管理',
@@ -25,10 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <TRPCProvider>{children}</TRPCProvider>
+      <body>
+        <ThemeRegistry>
+          <TRPCProvider>{children}</TRPCProvider>
+        </ThemeRegistry>
       </body>
     </html>
   )

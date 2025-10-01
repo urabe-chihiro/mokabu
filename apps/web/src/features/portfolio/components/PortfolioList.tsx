@@ -1,9 +1,17 @@
 'use client'
 
 import { trpc } from '@/lib/trpc/Provider'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  Button,
+  CircularProgress,
+  Alert,
+} from '@mui/material'
+import { TrendingUp, TrendingDown } from '@mui/icons-material'
 import Link from 'next/link'
 
 export function PortfolioList() {
@@ -11,88 +19,163 @@ export function PortfolioList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-neutral-600 dark:text-neutral-400">読み込み中...</div>
-      </div>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          py: 12,
+        }}
+      >
+        <CircularProgress />
+      </Box>
     )
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-red-600">エラー: {error.message}</div>
-      </div>
+      <Box sx={{ py: 12 }}>
+        <Alert severity="error">エラー: {error.message}</Alert>
+      </Box>
     )
   }
 
   if (!portfolios || portfolios.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+      <Card sx={{ boxShadow: 3 }}>
+        <CardContent sx={{ py: 12, textAlign: 'center' }}>
+          <Typography color="text.secondary" sx={{ mb: 4 }}>
             ポートフォリオがまだありません
-          </p>
-          <Button>新規作成</Button>
+          </Typography>
+          <Button variant="contained" size="large">
+            新規作成
+          </Button>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {portfolios.map((portfolio) => (
-        <Card key={portfolio.id} className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-xl">{portfolio.name}</CardTitle>
-                <CardDescription className="mt-1">
-                  {portfolio.stocks.length} 銘柄
-                </CardDescription>
-              </div>
-              <Badge variant={portfolio.totalProfit >= 0 ? 'default' : 'destructive'}>
-                {portfolio.totalProfit >= 0 ? '+' : ''}
-                {portfolio.profitRate.toFixed(2)}%
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-600 dark:text-neutral-400">評価額</span>
-                <span className="font-semibold">
-                  ¥{portfolio.totalValue.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-600 dark:text-neutral-400">取得額</span>
-                <span>¥{portfolio.totalCost.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-600 dark:text-neutral-400">損益</span>
-                <span
-                  className={
-                    portfolio.totalProfit >= 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
-                  }
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: '1fr',
+          md: 'repeat(2, 1fr)',
+          lg: 'repeat(3, 1fr)',
+        },
+        gap: 3,
+      }}
+    >
+      {portfolios.map((portfolio) => {
+        const isProfit = portfolio.totalProfit >= 0
+
+        return (
+          <Card
+            key={portfolio.id}
+            sx={{
+              boxShadow: 3,
+              transition: 'all 0.3s',
+              '&:hover': {
+                boxShadow: 8,
+                transform: 'translateY(-4px)',
+              },
+            }}
+          >
+            <CardContent>
+              {/* ヘッダー */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  mb: 2,
+                }}
+              >
+                <Box>
+                  <Typography variant="h6" component="h3" fontWeight="bold">
+                    {portfolio.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {portfolio.stocks.length} 銘柄
+                  </Typography>
+                </Box>
+                <Chip
+                  icon={isProfit ? <TrendingUp /> : <TrendingDown />}
+                  label={`${isProfit ? '+' : ''}${portfolio.profitRate.toFixed(2)}%`}
+                  color={isProfit ? 'success' : 'error'}
+                  sx={{ fontWeight: 'bold' }}
+                />
+              </Box>
+
+              {/* 詳細情報 */}
+              <Box sx={{ mb: 3 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    py: 1,
+                  }}
                 >
-                  {portfolio.totalProfit >= 0 ? '+' : ''}
-                  ¥{portfolio.totalProfit.toLocaleString()}
-                </span>
-              </div>
-            </div>
-            <div className="mt-4">
-              <Link href={`/portfolio/${portfolio.id}`}>
-                <Button variant="outline" className="w-full">
+                  <Typography variant="body2" color="text.secondary">
+                    評価額
+                  </Typography>
+                  <Typography variant="body2" fontWeight="bold">
+                    ¥{portfolio.totalValue.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    py: 1,
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    取得額
+                  </Typography>
+                  <Typography variant="body2">
+                    ¥{portfolio.totalCost.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    py: 1,
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    損益
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: isProfit ? 'success.main' : 'error.main',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {isProfit ? '+' : ''}
+                    ¥{portfolio.totalProfit.toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* アクション */}
+              <Link href={`/portfolio/${portfolio.id}`} passHref legacyBehavior>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  component="a"
+                  sx={{ py: 1.5 }}
+                >
                   詳細を見る
                 </Button>
               </Link>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </Box>
   )
 }
-
