@@ -1,20 +1,12 @@
 import { z } from 'zod'
-import { router, publicProcedure } from '../trpc'
+import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { prisma } from '@mokabu/database'
 
 export const portfolioRouter = router({
-  // 全ポートフォリオ取得
-  getAll: publicProcedure
-    .input(
-      z
-        .object({
-          userId: z.string().optional(),
-        })
-        .optional()
-    )
-    .query(async ({ input }) => {
+  // 全ポートフォリオ取得（ログインユーザーのみ）
+  getAll: protectedProcedure.query(async ({ ctx }) => {
       const portfolios = await prisma.portfolio.findMany({
-        where: input?.userId ? { userId: input.userId } : undefined,
+        where: { userId: ctx.userId },
         include: {
           stocks: true,
           user: {
@@ -54,11 +46,14 @@ export const portfolioRouter = router({
     }),
 
   // ID指定で取得
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const portfolio = await prisma.portfolio.findUnique({
-        where: { id: input.id },
+        where: { 
+          id: input.id,
+          userId: ctx.userId, // ログインユーザーのポートフォリオのみ
+        },
         include: {
           stocks: true,
           user: {
@@ -96,23 +91,25 @@ export const portfolioRouter = router({
     }),
 
   // 作成
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         name: z.string().min(1, 'ポートフォリオ名は必須です'),
         description: z.string().optional(),
         initialAmount: z.number().min(0).default(0),
-        userId: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       return prisma.portfolio.create({
-        data: input,
+        data: {
+          ...input,
+          userId: ctx.userId, // ログインユーザーに紐付け
+        },
       })
     }),
 
   // 更新
-  update: publicProcedure
+  update: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -121,20 +118,26 @@ export const portfolioRouter = router({
         initialAmount: z.number().min(0).optional(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { id, ...data } = input
       return prisma.portfolio.update({
-        where: { id },
+        where: { 
+          id,
+          userId: ctx.userId, // ログインユーザーのポートフォリオのみ更新可能
+        },
         data,
       })
     }),
 
   // 削除
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       return prisma.portfolio.delete({
-        where: { id: input.id },
+        where: { 
+          id: input.id,
+          userId: ctx.userId, // ログインユーザーのポートフォリオのみ削除可能
+        },
       })
     }),
 })

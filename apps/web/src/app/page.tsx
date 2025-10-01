@@ -10,6 +10,7 @@ export default function HomePage() {
     'Material-UI',
     'tRPC',
     'Prisma',
+    'NextAuth.js',
     'SQLite',
     'Turborepo',
   ]
@@ -65,16 +66,15 @@ export default function HomePage() {
               <Typography color="text.secondary" sx={{ mb: 3 }}>
                 保有株式の一覧表示・追加・編集・削除
               </Typography>
-              <Link href="/portfolio" passHref legacyBehavior>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  component="a"
-                  sx={{ py: 1.5 }}
-                >
-                  ポートフォリオを見る
-                </Button>
-              </Link>
+              <Button
+                variant="contained"
+                fullWidth
+                component={Link}
+                href="/portfolio"
+                sx={{ py: 1.5 }}
+              >
+                ポートフォリオを見る
+              </Button>
             </CardContent>
           </Card>
 
