@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export function Header() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -25,7 +25,7 @@ export function Header() {
           Mokabu
         </Link>
 
-        {session ? (
+        {status === 'loading' ? null : session ? (
           <div className="flex items-center gap-4 ml-auto">
             <Button asChild variant="ghost">
               <Link href="/portfolio">
