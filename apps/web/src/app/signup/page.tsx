@@ -4,19 +4,8 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc/Provider'
-import {
-  Box,
-  Container,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  Link as MuiLink,
-  Divider,
-} from '@mui/material'
-import { Google } from '@mui/icons-material'
+import { Button, Card, CardContent, Input, Label, Alert, AlertDescription, Separator } from '@/components/ui'
+import { Chrome } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SignupPage() {
@@ -75,105 +64,116 @@ export default function SignupPage() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        bgcolor: 'background.default',
-      }}
-    >
-      <Container maxWidth="sm">
-        <Box sx={{ mb: 4, textAlign: 'center' }}>
-          <Typography variant="h3" component="h1" fontWeight="bold" sx={{ mb: 1 }}>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="w-full max-w-md mx-auto px-4">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold mb-2">
             新規登録
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          </h1>
+          <p className="text-muted-foreground">
             無料でアカウントを作成
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
-        <Card sx={{ boxShadow: 3 }}>
-          <CardContent sx={{ p: 4 }}>
+        <Card className="shadow-lg">
+          <CardContent className="p-6">
             {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
+              <Alert className="mb-4" variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             {/* Googleログインボタン */}
             <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<Google />}
+              variant="outline"
+              className="w-full h-12 mb-4"
               onClick={handleGoogleLogin}
               disabled={isLoading}
-              sx={{ py: 1.5, mb: 3 }}
             >
+              <Chrome className="mr-2 h-4 w-4" />
               Googleで登録
             </Button>
 
-            <Divider sx={{ my: 3 }}>または</Divider>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  または
+                </span>
+              </div>
+            </div>
 
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="名前"
-                type="text"
-                fullWidth
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                sx={{ mb: 3 }}
-              />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">名前</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                />
+              </div>
 
-              <TextField
-                label="メールアドレス"
-                type="email"
-                fullWidth
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{ mb: 3 }}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="email">メールアドレス</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                />
+              </div>
 
-              <TextField
-                label="パスワード"
-                type="password"
-                fullWidth
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                helperText="6文字以上で入力してください"
-                sx={{ mb: 3 }}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="password">パスワード</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                />
+                <p className="text-sm text-muted-foreground">
+                  6文字以上で入力してください
+                </p>
+              </div>
 
               <Button
                 type="submit"
-                variant="contained"
-                fullWidth
-                size="large"
+                className="w-full h-12 mt-6"
                 disabled={isLoading}
-                sx={{ py: 1.5, mb: 2 }}
               >
                 {isLoading ? '登録中...' : '登録する'}
               </Button>
             </form>
 
-            <Divider sx={{ my: 3 }}>または</Divider>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  または
+                </span>
+              </div>
+            </div>
 
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
                 既にアカウントをお持ちですか？{' '}
-                <MuiLink component={Link} href="/login" underline="hover">
+                <Link href="/login" className="text-primary hover:underline">
                   ログイン
-                </MuiLink>
-              </Typography>
-            </Box>
+                </Link>
+              </p>
+            </div>
           </CardContent>
         </Card>
-      </Container>
-    </Box>
+      </div>
+    </div>
   )
 }
 

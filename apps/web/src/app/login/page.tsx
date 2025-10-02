@@ -3,19 +3,8 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import {
-  Box,
-  Container,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  Link as MuiLink,
-  Divider,
-} from '@mui/material'
-import { Google } from '@mui/icons-material'
+import { Button, Card, CardContent, Input, Label, Alert, AlertDescription, Separator } from '@/components/ui'
+import { Chrome } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -63,92 +52,90 @@ export default function LoginPage() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        bgcolor: 'background.default',
-      }}
-    >
-      <Container maxWidth="sm">
-        <Box sx={{ mb: 4, textAlign: 'center' }}>
-          <Typography variant="h3" component="h1" fontWeight="bold" sx={{ mb: 1 }}>
+    <div className="min-h-screen flex items-center bg-background">
+      <div className="container mx-auto px-4 max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold mb-2">
             ログイン
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          </h1>
+          <p className="text-muted-foreground">
             Mokabuへようこそ
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
-        <Card sx={{ boxShadow: 3 }}>
-          <CardContent sx={{ p: 4 }}>
+        <Card className="shadow-lg">
+          <CardContent className="p-6">
             {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             {/* Googleログインボタン */}
             <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              startIcon={<Google />}
+              variant="outline"
+              className="w-full h-12 mb-6"
               onClick={handleGoogleLogin}
               disabled={isLoading}
-              sx={{ py: 1.5, mb: 3 }}
             >
+              <Chrome className="mr-2 h-4 w-4" />
               Googleでログイン
             </Button>
 
-            <Divider sx={{ my: 3 }}>または</Divider>
+            <div className="flex items-center my-6">
+              <Separator className="flex-1" />
+              <span className="px-3 text-sm text-muted-foreground">または</span>
+              <Separator className="flex-1" />
+            </div>
 
             <form onSubmit={handleSubmit}>
-              <TextField
-                label="メールアドレス"
-                type="email"
-                fullWidth
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{ mb: 3 }}
-              />
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="email">メールアドレス</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
 
-              <TextField
-                label="パスワード"
-                type="password"
-                fullWidth
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                sx={{ mb: 3 }}
-              />
+                <div>
+                  <Label htmlFor="password">パスワード</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
 
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                size="large"
-                disabled={isLoading}
-                sx={{ py: 1.5, mb: 2 }}
-              >
-                {isLoading ? 'ログイン中...' : 'ログイン'}
-              </Button>
+                <Button
+                  type="submit"
+                  className="w-full h-12"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'ログイン中...' : 'ログイン'}
+                </Button>
+              </div>
             </form>
 
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
+            <div className="text-center mt-6">
+              <p className="text-sm text-muted-foreground">
                 アカウントをお持ちでないですか？{' '}
-                <MuiLink component={Link} href="/signup" underline="hover">
+                <Link href="/signup" className="text-primary hover:underline">
                   新規登録
-                </MuiLink>
-              </Typography>
-            </Box>
+                </Link>
+              </p>
+            </div>
           </CardContent>
         </Card>
-      </Container>
-    </Box>
+      </div>
+    </div>
   )
 }
 

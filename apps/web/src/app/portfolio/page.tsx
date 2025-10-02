@@ -1,4 +1,3 @@
-import { Box, Container, Typography } from '@mui/material'
 import { PortfolioList } from '@/features/portfolio/components/PortfolioList'
 import { auth } from '@/lib/auth'
 import { createCaller } from '@mokabu/server'
@@ -20,23 +19,18 @@ export default async function PortfolioPage() {
     })
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: 'background.default',
-      }}
-    >
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Box sx={{ mb: 6 }}>
-          <Typography variant="h3" component="h1" fontWeight="bold" sx={{ mb: 1 }}>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-16 max-w-6xl">
+        <div className="mb-12">
+          <h1 className="text-3xl font-bold mb-2">
             ポートフォリオ
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+          </h1>
+          <p className="text-muted-foreground">
             保有している株式ポートフォリオの一覧
-          </Typography>
-        </Box>
+          </p>
+        </div>
         <PortfolioList initialData={initialData} />
-      </Container>
-    </Box>
+      </div>
+    </div>
   )
 }

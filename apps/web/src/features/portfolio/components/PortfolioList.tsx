@@ -1,17 +1,8 @@
 'use client'
 
 import { trpc } from '@/lib/trpc/Provider'
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-  Button,
-  CircularProgress,
-  Alert,
-} from '@mui/material'
-import { TrendingUp, TrendingDown } from '@mui/icons-material'
+import { Button, Card, CardContent, Badge, Alert, AlertDescription } from '@/components/ui'
+import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import type { PortfolioList as PortfolioListType } from '@/lib/trpc/types'
 
@@ -28,35 +19,30 @@ export function PortfolioList({ initialData }: PortfolioListProps) {
 
   if (isLoading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          py: 12,
-        }}
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
     )
   }
 
   if (error) {
     return (
-      <Box sx={{ py: 12 }}>
-        <Alert severity="error">エラー: {error.message}</Alert>
-      </Box>
+      <div className="py-12">
+        <Alert variant="destructive">
+          <AlertDescription>エラー: {error.message}</AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   if (!portfolios || portfolios.length === 0) {
     return (
-      <Card sx={{ boxShadow: 3 }}>
-        <CardContent sx={{ py: 12, textAlign: 'center' }}>
-          <Typography color="text.secondary" sx={{ mb: 4 }}>
+      <Card className="shadow-lg">
+        <CardContent className="py-12 text-center">
+          <p className="text-muted-foreground mb-6">
             ポートフォリオがまだありません
-          </Typography>
-          <Button variant="contained" size="large">
+          </p>
+          <Button className="h-12">
             新規作成
           </Button>
         </CardContent>
@@ -65,125 +51,80 @@ export function PortfolioList({ initialData }: PortfolioListProps) {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: '1fr',
-          md: 'repeat(2, 1fr)',
-          lg: 'repeat(3, 1fr)',
-        },
-        gap: 3,
-      }}
-    >
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {portfolios.map((portfolio) => {
         const isProfit = portfolio.totalProfit >= 0
 
         return (
           <Card
             key={portfolio.id}
-            sx={{
-              boxShadow: 3,
-              transition: 'all 0.3s',
-              '&:hover': {
-                boxShadow: 8,
-                transform: 'translateY(-4px)',
-              },
-            }}
+            className="shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
           >
-            <CardContent>
+            <CardContent className="p-6">
               {/* ヘッダー */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  mb: 2,
-                }}
-              >
-                <Box>
-                  <Typography variant="h6" component="h3" fontWeight="bold">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold">
                     {portfolio.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
                     {portfolio.stocks.length} 銘柄
-                  </Typography>
-                </Box>
-                <Chip
-                  icon={isProfit ? <TrendingUp /> : <TrendingDown />}
-                  label={`${isProfit ? '+' : ''}${portfolio.profitRate.toFixed(2)}%`}
-                  color={isProfit ? 'success' : 'error'}
-                  sx={{ fontWeight: 'bold' }}
-                />
-              </Box>
+                  </p>
+                </div>
+                <Badge
+                  variant={isProfit ? 'default' : 'destructive'}
+                  className="flex items-center gap-1"
+                >
+                  {isProfit ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
+                  {isProfit ? '+' : ''}{portfolio.profitRate.toFixed(2)}%
+                </Badge>
+              </div>
 
               {/* 詳細情報 */}
-              <Box sx={{ mb: 3 }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    py: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
+              <div className="space-y-2 mb-6">
+                <div className="flex justify-between py-1">
+                  <p className="text-sm text-muted-foreground">
                     評価額
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold">
+                  </p>
+                  <p className="text-sm font-semibold">
                     ¥{portfolio.totalValue.toLocaleString()}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    py: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
+                  </p>
+                </div>
+                <div className="flex justify-between py-1">
+                  <p className="text-sm text-muted-foreground">
                     取得額
-                  </Typography>
-                  <Typography variant="body2">
+                  </p>
+                  <p className="text-sm">
                     ¥{portfolio.totalCost.toLocaleString()}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    py: 1,
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
+                  </p>
+                </div>
+                <div className="flex justify-between py-1">
+                  <p className="text-sm text-muted-foreground">
                     損益
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: isProfit ? 'success.main' : 'error.main',
-                      fontWeight: 'bold',
-                    }}
+                  </p>
+                  <p
+                    className={`text-sm font-semibold ${isProfit ? 'text-green-600' : 'text-red-600'}`}
                   >
                     {isProfit ? '+' : ''}
                     ¥{portfolio.totalProfit.toLocaleString()}
-                  </Typography>
-                </Box>
-              </Box>
+                  </p>
+                </div>
+              </div>
 
               {/* アクション */}
-              <Button
-                variant="outlined"
-                fullWidth
-                component={Link}
-                href={`/portfolio/${portfolio.id}`}
-                sx={{ py: 1.5 }}
-              >
-                詳細を見る
+              <Button asChild variant="outline" className="w-full h-12">
+                <Link href={`/portfolio/${portfolio.id}`}>
+                  詳細を見る
+                </Link>
               </Button>
             </CardContent>
           </Card>
         )
       })}
-    </Box>
+    </div>
   )
 }

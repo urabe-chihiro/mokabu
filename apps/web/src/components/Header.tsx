@@ -1,6 +1,6 @@
 'use client'
 
-import { AppBar, Toolbar, Typography, Button, Box, Avatar } from '@mui/material'
+import { Button, Avatar, AvatarFallback } from '@/components/ui'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -16,72 +16,57 @@ export function Header() {
   }
 
   return (
-    <AppBar position="static" elevation={1}>
-      <Toolbar>
-        <Typography
-          variant="h6"
-          component={Link}
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center px-4">
+        <Link
           href="/"
-          sx={{
-            flexGrow: 1,
-            textDecoration: 'none',
-            color: 'inherit',
-            fontWeight: 'bold',
-          }}
+          className="text-lg font-bold text-foreground no-underline"
         >
           Mokabu
-        </Typography>
+        </Link>
 
         {session ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button
-              component={Link}
-              href="/portfolio"
-              color="inherit"
-            >
-              ポートフォリオ
+          <div className="flex items-center gap-4 ml-auto">
+            <Button asChild variant="ghost">
+              <Link href="/portfolio">
+                ポートフォリオ
+              </Link>
             </Button>
             
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar
-                sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}
-              >
-                {session.user?.name?.charAt(0) || session.user?.email?.charAt(0)}
+            <div className="flex items-center gap-2">
+              <Avatar className="w-8 h-8">
+                <AvatarFallback>
+                  {session.user?.name?.charAt(0) || session.user?.email?.charAt(0)}
+                </AvatarFallback>
               </Avatar>
-              <Typography variant="body2">
+              <span className="text-sm">
                 {session.user?.name || session.user?.email}
-              </Typography>
-            </Box>
+              </span>
+            </div>
 
             <Button
-              variant="outlined"
-              color="inherit"
+              variant="outline"
               onClick={handleSignOut}
             >
               ログアウト
             </Button>
-          </Box>
+          </div>
         ) : (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              component={Link}
-              href="/login"
-              color="inherit"
-            >
-              ログイン
+          <div className="flex gap-2 ml-auto">
+            <Button asChild variant="ghost">
+              <Link href="/login">
+                ログイン
+              </Link>
             </Button>
-            <Button
-              component={Link}
-              href="/signup"
-              variant="outlined"
-              color="inherit"
-            >
-              新規登録
+            <Button asChild variant="outline">
+              <Link href="/signup">
+                新規登録
+              </Link>
             </Button>
-          </Box>
+          </div>
         )}
-      </Toolbar>
-    </AppBar>
+      </div>
+    </header>
   )
 }
 
